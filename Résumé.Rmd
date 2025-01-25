@@ -1,0 +1,68 @@
+---
+title: "Exercices chapitre 1"
+output: html_notebook
+---
+# Chapitre 1
+
+```{r}
+library(tidyverse)
+library(lmtest)
+library(tseries)
+df1 <- read.csv("data1.csv",dec = ",")
+```
+
+### Q1
+```{r}
+fit1.1 <- lm(GVA ~ Labor_prod + Business_br, data = df1)
+fit1.1 |> summary()
+```
+Ce modèle est le modèle retenu. Le taux de naissance des entreprises n'est pas significatif dans le premier modèle et le $R²_a$ du second modèle est sensiblement plus élevé.
+Ce modèle permet d'expliquer environ 89% des variations observées dans le GVA.
+```{r}
+fit1.2 <- lm(GVA ~ Labor_prod, data = df1)
+fit1.2 |> summary()
+```
+
+```{r}
+fit1.3 <- lm(GVA ~ Business_br, data = df1)
+fit1.3 |> summary()
+```
+
+```{r}
+fit1.4 <- lm(Labor_prod ~ Business_br, data = df1)
+
+df1 |>
+  #select(Business_br, Labor_prod) |> 
+  ggplot(aes(x = Business_br, y = Labor_prod)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE)
+
+fit1.4 |> summary()
+  
+```
+? Patern géographique ?
+```{r}
+fit1.1 |> 
+  ggplot(aes(x = .fitted, y = .resid, label = df1$Region)) +
+  geom_point() +
+  geom_hline(yintercept = 0) +
+  geom_text(hjust=0, vjust=0)
+```
+
+Le test de Breusch-Pagan ne permet pas de rejeter l'hypothèse nulle d'homoscédasticité.
+
+Le test de Jarque-Bera ne permet pas de rejeter l'hypothèse nulle de normalisé des résidus.
+```{r}
+fit1.1 |> bptest()
+fit1.1$residuals |> jarque.bera.test()
+```
+
+
+# Chapitre 2
+
+```{r}
+library(spdep)
+```
+
+
+
