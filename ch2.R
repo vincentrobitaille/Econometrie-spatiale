@@ -110,10 +110,14 @@ us <- read_sf("us-state-boundaries/us-state-boundaries.shp") |>
                        "American Samoa")))
 
 names(us)
-plot(us)
+# plot(us)
+
+us |> 
+  st_simplify(preserveTopology = TRUE, dTolerance = 1000) |> 
+  ggplot()+
+  geom_sf()
 
 contus <- us |> poly2nb(queen = TRUE)
 
-
-
-
+lus <- contus |> nb2listw()
+contus |> nb2mat()
