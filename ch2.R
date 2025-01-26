@@ -121,3 +121,24 @@ contus <- us |> poly2nb(queen = TRUE)
 
 lus <- contus |> nb2listw()
 contus |> nb2mat()
+
+
+# Q2 : What is the meaning of spatially lagged variable ?
+# Le lag spatial est similaire est lag de série chronologique. Au lieu que la 
+# valeur de y soit en partie déterminée par les valeurs passées de y, elle est
+# plutôt influencée par les valeurs des voisins de l'individu observé.
+
+
+# Q4 : What is the aim of considering a corrected version of Moran's I test
+# statistics ? In what does it differ from the original definition ?
+# La version originale considère un estimateur biaisé de la variance ???
+
+
+
+
+
+
+
+
+
+
