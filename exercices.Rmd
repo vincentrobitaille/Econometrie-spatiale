@@ -1,6 +1,9 @@
 ---
-title: "Exercices Économétrie spatiale"
-output: html_notebook
+title: "Exercices - Économétrie spatiale"
+author: Vincent Robitaille
+output:
+  pdf_document: default
+  html_notebook: default
 ---
 ```{r}
 library(spdep)
@@ -116,16 +119,12 @@ us <- read_sf("us-state-boundaries/us-state-boundaries.shp") |>
                        "Alaska",
                        "United States Virgin Islands",
                        "American Samoa")))
-
 # names(us)
 # plot(us)
-
 gus <- us |> 
   ggplot()+
   geom_sf()+
   ggtitle("Carte des états américains (incluant DC) du continent")
-
-gus |> ggplotly()
 
 contus <- us |> poly2nb(queen = TRUE)
 
