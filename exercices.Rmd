@@ -1,0 +1,135 @@
+---
+title: "Exercices Économétrie spatiale"
+output: html_notebook
+---
+```{r}
+library(spdep)
+library(tidyverse)
+library(lmtest)
+```
+
+## Chapitre 2
+
+#### Question 2.2
+
+*What is the meaning of spatially lagged variable ?*
+Le lag spatial est similaire au lag d'une série chronologique. Au lieu que la valeur $y_t$ soit en partie déterminée par les valeurs passées, on parle plutôt de la variable $y_i$ qui est influencée par les autres valeurs de la variable $y$. La valeur y observée pour un individu est donc influencée par la valeur y des autres individus avec lesquels il a une *connection* ou dont il est proche.
+
+#### Question 2.3
+
+*What is the meaning of row-standardization of weight matrix ?  In which case is this operation beneficial ?*
+La matrice de poids dont les lignes sont standardisées est construite en divisant chaque élément de la ligne par la somme des éléments de cette ligne. Les éléments de la ligne de la nouvelle matrice sommes alors à zéro. Cette matrice est utile pour calculer les lag spatial en agissant comme une sorte de moyenne pondérée.
+
+#### Exercice 2.1
+
+```{r}
+W21 <- matrix(0, nrow = 8, ncol = 8)
+colnames(W21) <- c("RO11", "RO12", "RO21", "RO22", 
+                   "RO31", "RO32", "RO41", "RO42")
+row.names(W21) <- c("RO11", "RO12", "RO21", "RO22", 
+                    "RO31", "RO32", "RO41", "RO42")
+W21[1,] <- c(0, 1, 1, 0, 0, 0, 0, 1)
+W21[2,] <- c(1, 0, 1, 1, 1, 0, 1, 1)
+W21[3,] <- c(1, 1, 0, 1, 0, 0, 0, 0)
+W21[4,] <- c(0, 1, 1, 0, 1, 0, 0, 0)
+W21[5,] <- c(0, 1, 0, 1, 0, 1, 1, 0)
+W21[6,] <- c(0, 0, 0, 0, 1, 0, 0, 0)
+W21[7,] <- c(0, 1, 0, 0, 1, 0, 0, 1)
+W21[8,] <- c(1, 1, 0, 0, 0, 0, 1, 0)
+x <- mat2listw(W21, style = "W")
+
+
+rom_regions <- c("R011", "RO12", "RO21", "RO22", "RO31", "RO32", "RO41", "RO42")
+rom_regions <- 1:8
+nbrom <- read.gal("romania.GAL", region.id = rom_regions)
+
+wrom <- nbrom |> nb2listw(style = "B")
+
+wrom2 <- nbrom |> nb2listw(style = "W")
+
+m <- wrom |> listw2mat()
+
+m |> as.numeric() |> mean()
+
+mr <- read.csv("romania_inf_mor_rate.csv", header = FALSE)
+
+lagged_var <- lag.listw(wrom2, mr$V2)
+```
+
+
+#### Exercice 2.4
+
+1. Wales
+2. Scotland
+3. Northen Ireland
+4. North East of England
+5. North West of England
+6. Yorkshire & Humberside
+7. East Midlands
+8. West Midlands
+9. East Anglia (East of England)
+10. Greater London
+11. South East England
+12. South West England
+
+```{r}
+ukgal <- read.gal("UK.GAL", region.id = 1:12)
+
+ukl <- ukgal |> nb2listw(style = "B")
+ukl |> listw2mat()
+```
+
+
+#### Exercice 2.5
+
+```{r}
+# Exo 2.5
+
+ukdat <- read.csv("data1.csv", dec = ",")
+
+laguk <- ukgal |> nb2listw(style = "W") |> lag.listw(ukdat$GVA)
+names(laguk) <- c("Wales", "Scotland", "North Ireland", "North East of England",
+                     "North West of England", "Yorkshire Humberside",
+                     "East Midlands", "West Midlands", "East Anglia",
+                     "Greater London", "South East England", "South West England")
+laguk
+```
+
+
+#### Exercice 2.9
+
+Le lien original ne fonctionnait pas, j'ai trouvé ces données comme alternative pour les besoins de l'exercice.
+https://public.opendatasoft.com/explore/dataset/us-state-boundaries/table/?location=3,20.11268,7.82227&basemap=jawg.light&dataChart=eyJxdWVyaWVzIjpbeyJjb25maWciOnsiZGF0YXNldCI6InVzLXN0YXRlLWJvdW5kYXJpZXMiLCJvcHRpb25zIjp7fX0sImNoYXJ0cyI6W3siYWxpZ25Nb250aCI6dHJ1ZSwidHlwZSI6ImNvbHVtbiIsImZ1bmMiOiJBVkciLCJ5QXhpcyI6ImdpZCIsInNjaWVudGlmaWNEaXNwbGF5Ijp0cnVlLCJjb2xvciI6IiNGRjUxNUEifV0sInhBeGlzIjoibmFtZSIsIm1heHBvaW50cyI6NTAsInNvcnQiOiIifV0sInRpbWVzY2FsZSI6IiIsImRpc3BsYXlMZWdlbmQiOnRydWUsImFsaWduTW9udGgiOnRydWV9
+
+J'ai aussi enlevé les territoires et états américains hors continent car sinon la fonction n'arrive pas à les associer à d'autres états (aucun voisin).
+```{r}
+
+us <- read_sf("us-state-boundaries/us-state-boundaries.shp") |> 
+  filter(!(name %in% c("Guam",
+                       "Palau",
+                       "Marshall Islands",
+                       "Northern Mariana Islands",
+                       "Fed States of Micronesia",
+                       "Puerto Rico",
+                       "Commonwealth of the Northern Mariana Islands",
+                       "Hawaii",
+                       "Alaska",
+                       "United States Virgin Islands",
+                       "American Samoa")))
+
+# names(us)
+# plot(us)
+
+gus <- us |> 
+  ggplot()+
+  geom_sf()+
+  ggtitle("Carte des états américains (incluant DC) du continent")
+
+gus |> ggplotly()
+
+contus <- us |> poly2nb(queen = TRUE)
+
+lus <- contus |> nb2listw()
+usWmat <- contus |> nb2mat()
+```
+
