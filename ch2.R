@@ -128,11 +128,9 @@ contus |> nb2mat()
 # valeur de y soit en partie déterminée par les valeurs passées de y, elle est
 # plutôt influencée par les valeurs des voisins de l'individu observé.
 
-
-# Q4 : What is the aim of considering a corrected version of Moran's I test
-# statistics ? In what does it differ from the original definition ?
-# La version originale considère un estimateur biaisé de la variance ???
-
+# Q3 : What is the meaning of row-standardization of weight matrix ?  In which case is this operation beneficial ?
+# La matrice avec lignes standardisées veut dire que l'ensemble des éléments d'une ligne sont divisés par sa somme.
+# La somme des éléments de la ligne sommes à 1.  Utile pour servir dans le lag spatial (sorte de moyenne pondérée).
 
 
 
