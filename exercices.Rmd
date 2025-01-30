@@ -44,7 +44,7 @@ x <- mat2listw(W21, style = "W")
 
 rom_regions <- c("R011", "RO12", "RO21", "RO22", "RO31", "RO32", "RO41", "RO42")
 rom_regions <- 1:8
-nbrom <- read.gal("romania.GAL", region.id = rom_regions)
+nbrom <- read.gal("data/romania.GAL", region.id = rom_regions)
 
 wrom <- nbrom |> nb2listw(style = "B")
 
@@ -54,7 +54,7 @@ m <- wrom |> listw2mat()
 
 m |> as.numeric() |> mean()
 
-mr <- read.csv("romania_inf_mor_rate.csv", header = FALSE)
+mr <- read.csv("data/romania_inf_mor_rate.csv", header = FALSE)
 
 lagged_var <- lag.listw(wrom2, mr$V2)
 ```
@@ -76,7 +76,7 @@ lagged_var <- lag.listw(wrom2, mr$V2)
 12. South West England
 
 ```{r}
-ukgal <- read.gal("UK.GAL", region.id = 1:12)
+ukgal <- read.gal("data/UK.GAL", region.id = 1:12)
 
 ukl <- ukgal |> nb2listw(style = "B")
 ukl |> listw2mat()
@@ -88,7 +88,7 @@ ukl |> listw2mat()
 ```{r}
 # Exo 2.5
 
-ukdat <- read.csv("data1.csv", dec = ",")
+ukdat <- read.csv("data/data1.csv", dec = ",")
 
 laguk <- ukgal |> nb2listw(style = "W") |> lag.listw(ukdat$GVA)
 names(laguk) <- c("Wales", "Scotland", "North Ireland", "North East of England",
@@ -107,7 +107,7 @@ https://public.opendatasoft.com/explore/dataset/us-state-boundaries/table/?locat
 J'ai aussi enlevé les territoires et états américains hors continent car sinon la fonction n'arrive pas à les associer à d'autres états (aucun voisin).
 ```{r}
 
-us <- read_sf("us-state-boundaries/us-state-boundaries.shp") |> 
+us <- read_sf("data/us-state-boundaries/us-state-boundaries.shp") |> 
   filter(!(name %in% c("Guam",
                        "Palau",
                        "Marshall Islands",
