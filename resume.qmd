@@ -5,3 +5,108 @@ format: pdf
 editor: visual
 ---
 
+# 1. Modèle de régression linéaire classique
+
+Sous la forme vectorielle: $$y = X\beta + \varepsilon, \quad\quad (\varepsilon,X) \stackrel{iid}{\sim} N(0, \sigma²_\varepsilon I_n)$$
+
+L'hypothèse que les résidus conditionnels à X soient indépendants et identiquement distribués selon cette loi normale avec une variance constante a deux implications:
+
+1.  Exogénéité, c'est à dire que les chocs sont indépendants des variables explicatives. $E[\varepsilon|X] = 0$
+2.  Sphéricité des termes d'erreur, c'est à dire l'absence d'autocorrélation et l'absence d'hétéroscédasticité dans les termes d'erreur. Cela implique que les chocs sont parfaitement indépedant entre eux et que leur variance n'est pas influencée par les valeurs de $X$.
+
+Lorsque ces conditions sont respectées, on considère alors l'estimateur des moindres carrées $\beta_{OLS}$ comme étant le meilleur estimateur linéaire non biaisé (BLUE). L'estimation par OLS consiste à trouver les valeurs des paramètres qui minimisent la somme des termes d'erreur au carré (la différence entre la valeur prédite et la valeur réelle pour l'ensemble des observations). La somme des erreurs au carré est définie comme $S(\beta) = e'e$, où $e = y - X\hat{\beta}$. La solution de se problème d'optimisation nous amène alors à la solution $$\hat{\beta} = (X'X)^{-1}X'y$$
+
+On peut vérifier que l'estimateur est bel et bien sans biais puisque $E[\hat{\beta}|X] = \beta$. De plus, sa variance est $Var[\hat{\beta}|X] = (X'X)^{-1}\sigma²_{\varepsilon}$. Cela revient donc à dire que la distribution de l'estimateur des OLS suit une normale iid d'espérance et de variances précédement définies, soit $$(\hat{\beta}|X) \stackrel{iid}{\sim} N\left(\beta, (X'X)^{-1}\sigma²_{\varepsilon}\right)$$
+
+L'estimation par OLS coïncide aussi dans ce cas (loi normale) avec l'estimateur du maximum de vraisemblance (MLE).  La vraisemblance est une fonction qui calcul la densité de l'observation des données $(y_1, ..., y_n)$ selon un vecteur de paramètres $\theta$. Celle-ci est obtenue à partir de la distribution conjointe de l'ensemble des observations de l'échantillon disponible. Pour l'optimisation par MLE, le vecteur de paramètres qui maximise cette fonction sert d'estimation ponctuelle pour les paramètres d'intérêt.
+
+Dans le cas où les résidus suivent une loi normale iid en respectant les hypothèses énoncées, l'expression de la fonction de vraisemblance est la suivante:
+
+$$L(\beta, \sigma²) = \prod_{i=1}^{n} \frac{1}{\sigma_\varepsilon \sqrt{2\pi}} \exp{\left\{-\frac{1}{2}\varepsilon²_i\right\}}$$
+Encore une fois, la résolution du problème d'optimisaiton nous permet d'obtenir une solution fermée pour les estimateurs du MLE, ainsi que la matrice d'information de Fisher soient:
+\begin{align*}
+  \hat{\beta}_{MLE} &= (X'X)^{-1}X'y\\
+  \hat{\sigma}²_{MLE} &= \frac{e'e}{n}\\
+  I\left(\beta, \sigma²_\varepsilon\right) &=
+  \begin{bmatrix}
+    \dfrac{1}{\hat{\sigma}²_\varepsilon} X'X & 0\\
+    0 & \dfrac{n}{2\hat{\sigma}⁴_\varepsilon}
+  \end{bmatrix}
+\end{align*}
+
+De plus, l'estimation par la méthodes moments permet également d'obtenir la même expression pour l'estimateur de $\beta$.
+\begin{align*}
+  \frac{1}{n}X'e = E[X'\varepsilon] &= 0\\
+  \Longrightarrow \frac{1}{n}X'(y-X\beta) &= 0\\
+  \Longrightarrow \frac{1}{n}X'y - \frac{1}{n}X'X\beta &= 0\\
+  \Longrightarrow \hat{\beta}_{MM} &= (X'X)^{-1}X'y
+\end{align*}
+
+# 2. Introduction aux données spatiales
+
+S'il y a présence d'autocorrélation dans les termes d'erreur, certains éléments de hors diagonale de la matrice de variance-covariance se seront pas nuls. Les propriétés optimales des MCO se seraient alors pas valides et l'estimation par GLS serait uniquement possible si on pouvait spécifier exactement la forme d'autocorrélation. Soit les régions $1, ..., n$ avec une autocorrélation spatiale, nous pourrions nous attendre à observer au moins l'un de ses deux phénomènes:
+
+- Une autocorrélation spatiale positive (négative) apparait lorsque les individus *proches* les uns des autres sont plus (moins) semblables que ceux éloignés.
+- L'hétérogénéité spatiale apparait lorsque certaines régions présentent plus de variabilité que d'autres. Cela peut être représenté à l'aide de la matrice de variance-covariance.
+
+Afin de travailler avec des données spatiales, nous devons posséder deux types d'information à propos des individu:
+
+1. Valeurs observées de variables individuelles (social, économique, etc.)
+2. La localisation de l'observation de ces variables et les liens de proximité entre les observations spatiales.
+
+Plusieurs critères de proximité peuvent être utilisés. Parmis ceux-ci, on retrouve nottament, en référence aux échecs:
+- *Rook's criterion*: les unités sont proches si elles partagent un côté.
+- *Queen's criterion*: les unités sont proches si elles partagent un côté ou un coin.
+- En réalité, les espaces géographiques sont assez complexes (régions administratives, irrégularité géométriques, etc) et d'autres types de critères peuvent être utilisés. On retrouve nottament la distance entre le centre des régions, les plus proches voisins, de même que des mesures de distance non géographiques telles que des intéractions sociales dans un réseau et autres mesures de distance et d'association non géographiques.
+
+### 2.1 Matrice de pondération spatiale **W** et lag spatial
+
+La matrice de pondération spatiale $W$ permet de décrire les associations entre les différentes observations. Dans sa forme la plus simple, les éléments $w_ij \, (i\neq j)$ de celle-ci prenent la valeur $1$ si l'individu $i$ est voisin de l'individu $j$ (si $j \in N(i))$) et $0$ sinon. L'ensemble $N(i)$ représente les voisins de la localisation $j$ selon différents critères tels que:
+
+- Territoires adjacents
+- Distance maximale ($j \in N(i)$ si $d_{ij} < d_{max}$)
+- Critère du plus proche voisin
+- Fonction négative de distances géographiques, économiques ou sociales entre des régions au lieu de données dichotomiques.
+
+\begin{align*}
+W = 
+  \begin{bmatrix}
+    w_{11} & \cdots & w_{n1}\\
+    \vdots & w_{ij} & \vdots\\
+    w_{1n} & \cdots & w_{nn0}
+  \end{bmatrix}
+\end{align*}
+
+La matrice standardisée $W*$, dans laquelle les éléments sont $w*_{ij} = \frac{w_{ij}}{\sum_{j=1}^n w_{ij}}$ a pour utilité principale le calcul du lag spatial d'un vecteur d'intérêt. Le lag spatial revient à prendre la moyenne pondérée valeurs observés chez les voisins d'un individu et est défini comme:
+$$L(y) = W*y, \quad \quad L(y_i) = \sum_{j = 1}^{n} w*_{ij} y_j$$
+
+
+# 3. Modèles de régression linéaire spatiaux
+
+### 3.1 Forme générale
+
+De manière similaires aux modèles de séries chronologiques qui relâchent l'hypothèse d'absence d'autocorrélation temporelle, nous allons maintenant relâcher l'hypothèse d'indépendance spatiale dans les chocs stochastiques. Posons d'abord que $W$ est la matrice standardisée. Sous sa forme la plus générale, nous allons considérer le modèle autorégressif spatial avec erreurs autorégressives $\text{SARAR}(1,1)$ suivant:
+\begin{align*}
+  y &= \lambda W y + X \beta_{(1)} + W X \beta{(2)} + u , \quad \quad |\lambda| < 1\\
+  \Longleftrightarrow y &= \lambda W y + Z \beta + u, \quad \quad Z = [X, WX], \quad \beta = [\beta_{(1)}, \beta_{(2)}]\\
+  u &= \rho W u + \varepsilon , \quad \quad |\rho| < 1, \quad (\varepsilon|X) \stackrel{iid}{\sim} N(0, \sigma²_\varepsilon I_n)
+\end{align*}
+
+#### Théorème de Gershgorin
+Soit 
+\begin{align*}
+  (I-\lambda W)y &= X\beta_{(1)} + W X\beta_{(2)} + u\\
+  \Longleftrightarrow y &= (I-\lambda W)^{-1} \left[X\beta_{(1)} + WX \beta_{(2)} + u\right]\\
+  u &= (I-\rho W)^{-1}\varepsilon
+\end{align*}
+
+Sous la condition de l'existance des deux matrices inverses, alors lorsque W est standardisée, les deux matrices inverses existent si $|\rho|<1$ et $|\lambda|<1$.
+
+De ce modèle, six cas particuliers de modèles sont présentés.
+
+#### 3.1.1 Modèle spatial autorégressif pur
+
+Nous avons ici $\beta =0$ et soit $\lambda =0$ **ou** $\rho = 0$
+
+
+
