@@ -106,7 +106,17 @@ De ce modèle, six cas particuliers de modèles sont présentés.
 
 #### 3.1.1 Modèle spatial autorégressif pur
 
-Nous avons ici $\beta =0$ et soit $\lambda =0$ **ou** $\rho = 0$
+Nous avons ici $\beta =0$ et soit $\lambda =0$ **ou** $\rho = 0$. De plus, $W$ est non stochastique et $(\varepsilon|X) \stackrel{iid}{\sim} N(0, \sigma²_\varepsilon I_n)$. Le modèle devient alors une simple autorégression spatiale qui peut être estimée par MLE:
+\begin{align*}
+  \rho &= 0 \Longrightarrow y = \lambda W y +\varepsilon\\
+  \lambda &= 0 \Longrightarrow y = \lambda W y +\varepsilon, \quad \text{où} y = u
+\end{align*}
 
+#### 3.1.2 Lag spatial de X
+
+Soit $\lambda = \rho = 0, \quad (\varepsilon|X) \stackrel{iid}{\sim} N(0, \sigma²_\varepsilon I_n)$, $W$ et $X$ non stochastiques et $Z$ de plein rang, alors le modèle ne contient qu'un lag spatial de certaines variables indépendantes. Cela ne cause aucun problème pour l'estimation qui peut être faite par OLS.
+$$y = WX\gamma + X\beta + u$$
+
+#### 3.1.3 Modèle d'erreurs spatiales
 
 
