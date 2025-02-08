@@ -1,7 +1,0 @@
----
-title: "Exercices chapitre 1"
-output: html_notebook
----
-
-# 1,
-
