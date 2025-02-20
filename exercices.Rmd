@@ -5,28 +5,30 @@ output:
   pdf_document: default
   html_notebook: default
 ---
+
 ```{r}
 library(spdep)
 library(tidyverse)
 library(lmtest)
+library(tseries)
+library(spatialreg)
 ```
 
 # Chapitre 1
 
 ```{r}
-library(tidyverse)
-library(lmtest)
-library(tseries)
-df1 <- read.csv("data1.csv",dec = ",")
+df1 <- read.csv("data/data1.csv",dec = ",")
 ```
 
 ### Q1
+
 ```{r}
 fit1.1 <- lm(GVA ~ Labor_prod + Business_br, data = df1)
 fit1.1 |> summary()
 ```
-Ce modèle est le modèle retenu. Le taux de naissance des entreprises n'est pas significatif dans le premier modèle et le $R²_a$ du second modèle est sensiblement plus élevé.
-Ce modèle permet d'expliquer environ 89% des variations observées dans le GVA.
+
+Ce modèle est le modèle retenu. Le taux de naissance des entreprises n'est pas significatif dans le premier modèle et le $R²_a$ du second modèle est sensiblement plus élevé. Ce modèle permet d'expliquer environ 89% des variations observées dans le GVA.
+
 ```{r}
 fit1.2 <- lm(GVA ~ Labor_prod, data = df1)
 fit1.2 |> summary()
@@ -49,7 +51,9 @@ df1 |>
 fit1.4 |> summary()
   
 ```
+
 ? Patern géographique ?
+
 ```{r}
 fit1.1 |> 
   ggplot(aes(x = .fitted, y = .resid, label = df1$Region)) +
@@ -61,23 +65,21 @@ fit1.1 |>
 Le test de Breusch-Pagan ne permet pas de rejeter l'hypothèse nulle d'homoscédasticité.
 
 Le test de Jarque-Bera ne permet pas de rejeter l'hypothèse nulle de normalisé des résidus.
+
 ```{r}
 fit1.1 |> bptest()
 fit1.1$residuals |> jarque.bera.test()
 ```
 
-
 ## Chapitre 2
 
 #### Question 2.2
 
-*What is the meaning of spatially lagged variable ?*
-Le lag spatial est similaire au lag d'une série chronologique. Au lieu que la valeur $y_t$ soit en partie déterminée par les valeurs passées, on parle plutôt de la variable $y_i$ qui est influencée par les autres valeurs de la variable $y$. La valeur y observée pour un individu est donc influencée par la valeur y des autres individus avec lesquels il a une *connection* ou dont il est proche.
+*What is the meaning of spatially lagged variable ?* Le lag spatial est similaire au lag d'une série chronologique. Au lieu que la valeur $y_t$ soit en partie déterminée par les valeurs passées, on parle plutôt de la variable $y_i$ qui est influencée par les autres valeurs de la variable $y$. La valeur y observée pour un individu est donc influencée par la valeur y des autres individus avec lesquels il a une *connection* ou dont il est proche.
 
 #### Question 2.3
 
-*What is the meaning of row-standardization of weight matrix ?  In which case is this operation beneficial ?*
-La matrice de poids dont les lignes sont standardisées est construite en divisant chaque élément de la ligne par la somme des éléments de cette ligne. Les éléments de la ligne de la nouvelle matrice sommes alors à zéro. Cette matrice est utile pour calculer les lag spatial en agissant comme une sorte de moyenne pondérée.
+*What is the meaning of row-standardization of weight matrix ? In which case is this operation beneficial ?* La matrice de poids dont les lignes sont standardisées est construite en divisant chaque élément de la ligne par la somme des éléments de cette ligne. Les éléments de la ligne de la nouvelle matrice sommes alors à zéro. Cette matrice est utile pour calculer les lag spatial en agissant comme une sorte de moyenne pondérée.
 
 #### Exercice 2.1
 
@@ -115,18 +117,17 @@ mr <- read.csv("data/romania_inf_mor_rate.csv", header = FALSE)
 lagged_var <- lag.listw(wrom2, mr$V2)
 ```
 
-
 #### Exercice 2.4
 
-1. Wales
-2. Scotland
-3. Northen Ireland
-4. North East of England
-5. North West of England
-6. Yorkshire & Humberside
-7. East Midlands
-8. West Midlands
-9. East Anglia (East of England)
+1.  Wales
+2.  Scotland
+3.  Northen Ireland
+4.  North East of England
+5.  North West of England
+6.  Yorkshire & Humberside
+7.  East Midlands
+8.  West Midlands
+9.  East Anglia (East of England)
 10. Greater London
 11. South East England
 12. South West England
@@ -137,7 +138,6 @@ ukgal <- read.gal("data/UK.GAL", region.id = 1:12)
 ukl <- ukgal |> nb2listw(style = "B")
 ukl |> listw2mat()
 ```
-
 
 #### Exercice 2.5
 
@@ -154,13 +154,12 @@ names(laguk) <- c("Wales", "Scotland", "North Ireland", "North East of England",
 laguk
 ```
 
-
 #### Exercice 2.9
 
-Le lien original ne fonctionnait pas, j'ai trouvé ces données comme alternative pour les besoins de l'exercice.
-https://public.opendatasoft.com/explore/dataset/us-state-boundaries/table/?location=3,20.11268,7.82227&basemap=jawg.light&dataChart=eyJxdWVyaWVzIjpbeyJjb25maWciOnsiZGF0YXNldCI6InVzLXN0YXRlLWJvdW5kYXJpZXMiLCJvcHRpb25zIjp7fX0sImNoYXJ0cyI6W3siYWxpZ25Nb250aCI6dHJ1ZSwidHlwZSI6ImNvbHVtbiIsImZ1bmMiOiJBVkciLCJ5QXhpcyI6ImdpZCIsInNjaWVudGlmaWNEaXNwbGF5Ijp0cnVlLCJjb2xvciI6IiNGRjUxNUEifV0sInhBeGlzIjoibmFtZSIsIm1heHBvaW50cyI6NTAsInNvcnQiOiIifV0sInRpbWVzY2FsZSI6IiIsImRpc3BsYXlMZWdlbmQiOnRydWUsImFsaWduTW9udGgiOnRydWV9
+Le lien original ne fonctionnait pas, j'ai trouvé ces données comme alternative pour les besoins de l'exercice. <https://public.opendatasoft.com/explore/dataset/us-state-boundaries/table/?location=3,20.11268,7.82227&basemap=jawg.light&dataChart=eyJxdWVyaWVzIjpbeyJjb25maWciOnsiZGF0YXNldCI6InVzLXN0YXRlLWJvdW5kYXJpZXMiLCJvcHRpb25zIjp7fX0sImNoYXJ0cyI6W3siYWxpZ25Nb250aCI6dHJ1ZSwidHlwZSI6ImNvbHVtbiIsImZ1bmMiOiJBVkciLCJ5QXhpcyI6ImdpZCIsInNjaWVudGlmaWNEaXNwbGF5Ijp0cnVlLCJjb2xvciI6IiNGRjUxNUEifV0sInhBeGlzIjoibmFtZSIsIm1heHBvaW50cyI6NTAsInNvcnQiOiIifV0sInRpbWVzY2FsZSI6IiIsImRpc3BsYXlMZWdlbmQiOnRydWUsImFsaWduTW9udGgiOnRydWV9>
 
 J'ai aussi enlevé les territoires et états américains hors continent car sinon la fonction n'arrive pas à les associer à d'autres états (aucun voisin).
+
 ```{r}
 
 us <- read_sf("data/us-state-boundaries/us-state-boundaries.shp") |> 
@@ -186,5 +185,129 @@ contus <- us |> poly2nb(queen = TRUE)
 
 lus <- contus |> nb2listw()
 usWmat <- contus |> nb2mat()
+```
+
+## Chapitre 3
+
+#### Question 3.2
+
+L'estimation par maximum de vraisemblance d'un modèle SARAR(1, 1) est intensif d'un point de vue computationnel et il n'existe présentement pas de preuve formelle que les MLE possèdent les propriétés asymptotiques habituelles d'un MLE (incluant estimateur consistant ?).
+
+L'estimateur GS2SLS est consistent, mais pas pleinement efficient. L'alternative est le *Best Feasible GS2SLS* (BFG2SLS). Celui-ci atteint la borne inférieur pour la variance de l'estimateur dans les grand échantillons (Cramér-Rao ?). Numériquement intensif à calculer pour des grands échantillons.
+
+#### Exercice 3.2
+
+\begin{align*}
+  y &= X\beta + u, \quad \quad u = \rho Wu+\varepsilon\\
+  \varepsilon &= (I-\rho W)u\\
+  (I-\rho W)y &= (I-\rho W)X\beta + \underbrace{(I-\rho W)u}_{\varepsilon}\\
+  y &= \rho Wy + X\beta - \rho \beta WX + \varepsilon, \quad \gamma = -\rho\beta\\
+  y &= \rho Wy + X\beta + \gamma WX + \varepsilon
+\end{align*}
+
+On peut voir que le SEM peut être réécrit sous la forme d'une SLM avec lag spatial des variables indépendantes. Puisque le lag spatial de $y$ fait parti des variables explicatives, l'estimation par OLS est problématique car les termes d'erreur sont corrélés avec celle-ci. De plus, la présence de $\gamma = -\rho\beta$ dans le modèle fait en sorte que le modèle n'est plus linéaire dans ses paramètres.
+
+#### Exercice 3.6
+
+```{r}
+data(boston)
+```
+
+##### exemple 3.3
+
+```{r}
+fit1 <- lm(MEDV ~ CRIM + RM + INDUS + NOX + AGE + DIS + RAD + PTRATIO + 
+             B + LSTAT + TAX, data = boston.c)
+fit1 |> 
+  summary()
+# Test hétéroscédasticité
+fit1 |> 
+  bptest()
+# Test normalité résidu
+fit1$residuals |> 
+  jarque.bera.test()
+
+dist.centroid <- 3.99
+```
+
+```{r}
+fit1 |> plot(which = c(1,2))
+```
+
+On peut voir qu'avec les graphiques et tests présentés que les résidus du modèle ne sont pas normalement distribués et qu'ils ne sont pas homoscédastiques.
+
+On test ensuite la corrélation spatiale dans les résidus.
+```{r}
+boston.utm |> 
+  ggplot(aes(x=x, y=y)) +
+  geom_point() + 
+  ggtitle("Représentation spatiale des centroïds des secteurs de recensement")
+```
+
+Comme dans l'exemple du livre, le test avec le seuil de distance à 3.99 montre la présence d'une corrélation spatiale significative dans les résidus.
+
+```{r}
+dmat1 <- dnearneigh(boston.utm, 0, d2 = dist.centroid, longlat = FALSE)
+dmat1 <- dmat1 |> nb2listw()
+
+lm.morantest(fit1, dmat1, alternative = "two.sided")
+```
+
+
+```{r}
+# Estimation forme SEM
+fit3.1 <- errorsarlm(
+  formula = MEDV ~ CRIM + RM + INDUS + NOX + AGE + DIS + RAD + PTRATIO + 
+             B + LSTAT + TAX, 
+  data = boston.c, listw = dmat1
+  )
+fit3.1 |> summary()
+#fit3.1 |> bptest()
+fit3.1$residuals |> jarque.bera.test()
+
+fit3.2 <- GMerrorsar(
+  formula = MEDV ~ CRIM + RM + INDUS + NOX + AGE + DIS + RAD + PTRATIO + 
+             B + LSTAT + TAX, 
+  data = boston.c, listw = dmat1
+  )
+fit3.2 |> summary()
+
+fit3.3 <- errorsarlm(
+  formula = MEDV ~ CRIM + RM + INDUS + NOX, 
+  data = boston.c, listw = dmat1
+  )
+fit3.3 |> summary()
+
+fit3.4 <- GMerrorsar(
+  formula = MEDV ~ CRIM + RM + INDUS + NOX, 
+  data = boston.c, listw = dmat1
+  )
+fit3.4 |> summary()
+```
+
+
+#### Exercice 3.7
+
+Je n'arrive pas à trouver les données pour la courbe de Philips, je fais l'exercice pour la loi d'Okun
+
+```{r}
+ita_regions <- c(2, 3, 9, 1, 15, 19, 18, 11, 17, 4, 5, 12, 6, 10, 13, 7, 14, 8, 20, 16)
+nbitaly <- read.gal("data/Italy.GAL", 
+                    region.id = ita_regions
+                    )
+witaly <- nb2listw(nbitaly)
+italy_econ <- openxlsx::read.xlsx("data/ita_econ.xlsx")
+colnames(italy_econ) <- c(
+  # "id", 
+  "Region", "Var_unempl", "Var_rGDP")
+
+fit3.7.1 <- lm(Var_unempl ~ Var_rGDP, data = italy_econ)
+fit3.7.1 |> summary()
+fit3.7.1 |> bptest()
+fit3.7.1$residuals |> jarque.bera.test()
+```
+Résultats différents de l'exemple 2.3 ?
+```{r}
+lm.morantest(fit3.7.1, listw = witaly, alternative = "two.sided")
 ```
 
