@@ -22,7 +22,8 @@ df1 <- read.csv("data1.csv",dec = ",")
 
 ### Q1
 ```{r}
-fit1.1 <- lm(GVA ~ Labor_prod + Business_br, data = df1)
+fit1.1 <- lm(GVA ~ Labor_prod + Business_br, 
+             data = df1)
 fit1.1 |> summary()
 ```
 Ce modèle est le modèle retenu. Le taux de naissance des entreprises n'est pas significatif dans le premier modèle et le $R²_a$ du second modèle est sensiblement plus élevé.
@@ -62,8 +63,10 @@ Le test de Breusch-Pagan ne permet pas de rejeter l'hypothèse nulle d'homoscéd
 
 Le test de Jarque-Bera ne permet pas de rejeter l'hypothèse nulle de normalisé des résidus.
 ```{r}
-fit1.1 |> bptest()
-fit1.1$residuals |> jarque.bera.test()
+fit1.1 |> 
+  bptest()
+fit1.1$residuals |> 
+  jarque.bera.test()
 ```
 
 
@@ -98,9 +101,11 @@ W21[8,] <- c(1, 1, 0, 0, 0, 0, 1, 0)
 x <- mat2listw(W21, style = "W")
 
 
-rom_regions <- c("R011", "RO12", "RO21", "RO22", "RO31", "RO32", "RO41", "RO42")
+rom_regions <- c("R011", "RO12", "RO21", "RO22", 
+                 "RO31", "RO32", "RO41", "RO42")
 rom_regions <- 1:8
-nbrom <- read.gal("data/romania.GAL", region.id = rom_regions)
+nbrom <- read.gal("data/romania.GAL", 
+                  region.id = rom_regions)
 
 wrom <- nbrom |> nb2listw(style = "B")
 
@@ -110,7 +115,8 @@ m <- wrom |> listw2mat()
 
 m |> as.numeric() |> mean()
 
-mr <- read.csv("data/romania_inf_mor_rate.csv", header = FALSE)
+mr <- read.csv("data/romania_inf_mor_rate.csv", 
+               header = FALSE)
 
 lagged_var <- lag.listw(wrom2, mr$V2)
 ```
@@ -178,8 +184,8 @@ us <- read_sf("data/us-state-boundaries/us-state-boundaries.shp") |>
 # names(us)
 # plot(us)
 gus <- us |> 
-  ggplot()+
-  geom_sf()+
+  ggplot() +
+  geom_sf() +
   ggtitle("Carte des états américains (incluant DC) du continent")
 
 contus <- us |> poly2nb(queen = TRUE)
@@ -188,3 +194,18 @@ lus <- contus |> nb2listw()
 usWmat <- contus |> nb2mat()
 ```
 
+## Chapitre 3
+
+#### Question 3.2
+
+
+
+#### Exercice 3.2
+
+
+
+#### Exercice 3.6
+
+
+
+#### Exercice 3.7
