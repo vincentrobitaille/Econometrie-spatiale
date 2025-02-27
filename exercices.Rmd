@@ -315,5 +315,15 @@ fit3.7.1$residuals |> jarque.bera.test()
 Résultats différents de l'exemple 2.3 ?
 ```{r}
 lm.morantest(fit3.7.1, listw = witaly, alternative = "two.sided")
+
+# Fit SDM
+fit3.7.2 <- lagsarlm(
+  formula = Var_unempl ~ Var_rGDP,
+  data = italy_econ,
+  listw = witaly,
+  type = "mixed"
+)
+
+fit3.7.2 |> summary()
 ```
 
