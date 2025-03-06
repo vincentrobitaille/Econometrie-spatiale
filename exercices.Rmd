@@ -259,18 +259,26 @@ dmat1 <- dmat1 |> nb2listw()
 lm.morantest(fit1, dmat1, alternative = "two.sided")
 ```
 
+##### Comparaison 3.3
+
+On peut voir que les résultats ressemblent à l'estimation de l'exemple 3.3. Les signes des coefficients sont les mêmes (à l'exception de AGE) et leurs amplitudes sont relativement semblables. Nous devons également rejeter les hypothèses de normalité et d'homoscédasticité. Nous obtenons un AIC sensiblement plus faible que celui du SLM (3021.4 vs 3034.7)
 
 ```{r}
-# Estimation forme SEM
+# MLE
 fit3.1 <- errorsarlm(
   formula = MEDV ~ CRIM + RM + INDUS + NOX + AGE + DIS + RAD + PTRATIO + 
              B + LSTAT + TAX, 
   data = boston.c, listw = dmat1
   )
 fit3.1 |> summary()
-#fit3.1 |> bptest()
+fit3.1 |> bptest.Sarlm()
 fit3.1$residuals |> jarque.bera.test()
+```
 
+L'estimation par *Feasible GLS* donne sensiblement les mêmes résultats que l'estimation par maximum de vraisemblance pour le modèle SEM. Encore une fois, les résultats sont similaires à ceux du SLM de l'exemple 3.3, mais on observe quand même des différences. On rejete toujours l'hypothèse de normalité des résidus.
+
+```{r}
+# FGLS
 fit3.2 <- GMerrorsar(
   formula = MEDV ~ CRIM + RM + INDUS + NOX + AGE + DIS + RAD + PTRATIO + 
              B + LSTAT + TAX, 
@@ -278,23 +286,39 @@ fit3.2 <- GMerrorsar(
   )
 fit3.2 |> summary()
 
+fit3.2$residuals |> jarque.bera.test()
+
+```
+
+##### Comparaison 3.4
+
+On remarque qu'à l'exception de l'intercept, les valeurs des coefficents (sans lag) sont similaires entre l'estimation SEM et SDM de l'exemple 3.4. Puisqu'un SEM revient à un SDM lorsque $\gamma = -\rho\beta$, la différence dans l'estimation doit essentiellement provenir du fait que dans ces deux modèles, la contrainte n'est pas parfaitement respectée. Il y a également des différences remarquables dans les p-value calculées. L'AIC est sensiblement plus élevé et on rejette l'hypothèse de normalité.
+
+```{r}
 fit3.3 <- errorsarlm(
   formula = MEDV ~ CRIM + RM + INDUS + NOX, 
   data = boston.c, listw = dmat1
   )
 fit3.3 |> summary()
+fit3.3$residuals |> jarque.bera.test()
+```
 
+Les coefficients estimés sont très similaires à ceux du MLE. On remarque cependant que les écart-types sont plus faibles. On rejette encore l'hypothèse de normalité des résidus.
+
+```{r}
+# FGLS
 fit3.4 <- GMerrorsar(
   formula = MEDV ~ CRIM + RM + INDUS + NOX, 
   data = boston.c, listw = dmat1
   )
 fit3.4 |> summary()
+fit3.4$residuals |> jarque.bera.test()
 ```
 
 
 #### Exercice 3.7
 
-Je n'arrive pas à trouver les données pour la courbe de Philips, je fais l'exercice pour la loi d'Okun
+Je n'arrive pas à trouver les données pour la courbe de Philips (données pas présentes à l'exemple 2.4), je fais l'exercice pour la loi d'Okun
 
 ```{r}
 ita_regions <- c(2, 3, 9, 1, 15, 19, 18, 11, 17, 4, 5, 12, 6, 10, 13, 7, 14, 8, 20, 16)
