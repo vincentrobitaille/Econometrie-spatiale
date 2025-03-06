@@ -351,3 +351,26 @@ fit3.7.2 <- lagsarlm(
 fit3.7.2 |> summary()
 ```
 
+## Chapitre 4
+
+#### Question 4.1
+
+Lorsque les individus d'un jeu de données sont des régions, leurs différences significatives en terme de taille et de forme peuvent influencer la taille des chocs associés. La variance pourrait ainsi être plus élevée dans les régions plus grandes ou importantes. Nous aurions alors de l'hétéroscédasticité
+
+#### Question 4.5
+
+
+
+#### Question 4.7
+
+#### Question 4.14
+
+#### Exercice 4.1
+
+#### Exercice 4.3
+
+#### Exercice 4.4
+
+#### Exercice 4.5
+
+#### Exercice 4.9
