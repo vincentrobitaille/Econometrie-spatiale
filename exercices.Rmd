@@ -243,6 +243,7 @@ fit1 |> plot(which = c(1,2))
 On peut voir qu'avec les graphiques et tests présentés que les résidus du modèle ne sont pas normalement distribués et qu'ils ne sont pas homoscédastiques.
 
 On test ensuite la corrélation spatiale dans les résidus.
+
 ```{r}
 boston.utm |> 
   ggplot(aes(x=x, y=y)) +
@@ -315,7 +316,6 @@ fit3.4 |> summary()
 fit3.4$residuals |> jarque.bera.test()
 ```
 
-
 #### Exercice 3.7
 
 Je n'arrive pas à trouver les données pour la courbe de Philips (données pas présentes à l'exemple 2.4), je fais l'exercice pour la loi d'Okun
@@ -336,7 +336,9 @@ fit3.7.1 |> summary()
 fit3.7.1 |> bptest()
 fit3.7.1$residuals |> jarque.bera.test()
 ```
+
 Résultats différents de l'exemple 2.3 ?
+
 ```{r}
 lm.morantest(fit3.7.1, listw = witaly, alternative = "two.sided")
 
@@ -359,15 +361,58 @@ Lorsque les individus d'un jeu de données sont des régions, leurs différences
 
 #### Question 4.5
 
+Une estimation classique par maximum de vraisemblance se base sur l'hypothèse que les termes d'erreur sont iid.
 
+De plus, la vraisemblance *initiale* utilise la variable latente $y^\bullet$, mais puisque celle-ci n'est pas connue, la forme réduite doit être utilisée. Celle-ci comporte sont lot de complications au niveau de l'estimation numérique. La méthode trouvée pour y arriver (EM) cause cependant un biais dans les estimations. Des erreurs importantes dans le calcul du determinant de la matrice $\Omega$ peut survenir dans certains cas étant donné l'utilisation de méthodes d'approximation face à la complexitié computationnelle.
 
 #### Question 4.7
 
+À FAIRE
+
 #### Question 4.14
+
+L'utilisation d'une approche bayésienne permet d'incorporer de l'information a priori concernant les paramètres du modèle à estimer. Les estimations bayésiennes peuvent mener à des écart-types plus élevés, mais ceux-ci proviennent généralement par l'incertitude ou l'information fournie à travers le prior.
+
+De plus, le cadre bayésien traite les paramètres comme des variables aléatoires, ce qui nous permet d'estimer la probabilité qu'un paramètre se trouve dans un intervalle de confiance. Cette interprétation est souvent plus intuitive que l'approche par intervalle de confiance et p-values.
 
 #### Exercice 4.1
 
+Soit le niveau 1:
+
+$$y=X\beta+\varepsilon \quad \quad \varepsilon|X \stackrel{iid}{\sim}N\left(0, \sigma²_\varepsilon I_n\right)$$
+
+Soit le niveau 2 composé de $m$ niveaux, contenant chacun $n_m$ régions de niveau 1:
+
+$\overline{y}$ un agrégat de $y$ selon la matrice d'agrégation $G_{m\times n}$ t.q. $\overline{y} = Gy$
+
+$$\overline{y} = GX\beta + G\varepsilon$$
+
+Posons les éléments de $G$ comme $g_{ji}$ égal à 1 si l'individu i fait parti du groupe j et zéro sinon. Ainsi, si nous avons $g_{11}=1$, ça implique que $g_{j1} = 0$ pour tout j dans m, sauf le premier groupe. On se retrouve donc avec une matrice diagonale dans l'expression de la variance de résidus.
+
+Posons $G'G = G^*$, un matrice diagonale.
+
+L'expression de la variance pour le modèle de niveau 2 devient donc:
+
+$$\overline{\varepsilon}|\overline{X} \stackrel{iid}{\sim} N\left(0, \sigma²_\varepsilon G^*\right)$$
+
+On peut rapidement voir que la variance des résidus dépend du groupe dans lequel il se trouve puisque:
+
+$$\overline{\varepsilon}_m|\overline{X} \stackrel{iid}{\sim} N\left(0, \sigma²_\varepsilon G^*_m\right)$$
+
 #### Exercice 4.3
+
+```{r}
+library(sphet)
+eu <- readxl::read_xlsx("data/econ_UE.xlsx")
+ue_pays <- eu$Country_code
+df_4_3 <- read.gal("data/eu.GAL", region.id = ue_pays)
+euw <- df_4_3 |> nb2listw(style = "W")
+
+fit_eu1 <- gstslshet(Growth_2010_2011 ~ pct_exp_educ_2009, data = eu, listw = euw)
+fit_eu1 |> 
+  summary()
+```
+
 
 #### Exercice 4.4
 
