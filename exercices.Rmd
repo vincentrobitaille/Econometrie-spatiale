@@ -416,6 +416,49 @@ fit_eu1 |>
 
 #### Exercice 4.4
 
+$$y^\bullet = X\beta + u \quad \quad y = I(y^\bullet > 0)$$
+$$u = \rho Wu+ \varepsilon \quad \quad \varepsilon|X \stackrel{iid}{\sim}N(0,I)$$
+$$Pr\left(Y=1|X\right) = Pr\left(Y^\bullet>0\right) = Pr\left(X\beta+u>0\right)$$
+$$=Pr\left(X\beta+(I-\rho W)^{-1}\varepsilon > 0\right) = Pr\left((I-\rho W)^{-1}\varepsilon < X\beta\right) = Pr\left(\varepsilon<(I-\rho W)X\beta\right)$$
+$$\Longrightarrow Pr\left[y_i = 1|x_i\right] = \Phi\left[(I-\rho W) X\beta\right] \quad \& \quad Pr\left[y_i = 0|x_i\right] = 1- \Phi\left[(I-\rho W) X\beta\right]$$
+
+$$\mathcal{L}\left(\beta,\rho; Y, X\right) = \prod_{i=1}^n \left[\Phi\left((I-\rho W_i)x'_i\beta\right)\right]^{y_i} \left[1- \Phi\left((I-\rho W_i)x'_i\beta\right)\right]^{(1-y_i)}$$
+$$l\left(\beta, \rho; Y,X\right) = \sum^n_{i=1} \Biggl( y_i \log\biggr[\Phi \left(\left(I-\rho W_i\right)x'_i\beta\right)\biggr]  + (1-y_i) \log\biggr[1 - \Phi \left(\left(I-\rho W_i\right)x'_i\beta\right)\biggr]\Biggl)$$
+$$\frac{\partial l}{\partial \rho} = \sum_{i=1}^n \left[y_i\frac{\phi\left((I-\rho W_i\right)x_i'\beta) \left(-W_i x'_i\beta\right)}{\Phi \left(\left(I-\rho W_i\right)x'_i\beta\right)} + (1-y_i) \frac{\Bigl[-\phi\left((I-\rho W_i\right)x_i'\beta)\Bigl] \left(-W_i x'_i\beta\right)}{\Bigl[1-\Phi \left(\left(I-\rho W_i\right)x'_i\beta\right)\Bigl]}\right]$$
+$$\frac{\partial l}{\partial \beta} = \sum_{i=1}^n \left[y_i\frac{\phi\left((I-\rho W_i\right)x_i'\beta) \left((I-\rho W_i)x_i'\right)}{\Phi \left(\left(I-\rho W_i\right)x'_i\beta\right)} + (1-y_i) \frac{\Bigl[-\phi\left((I-\rho W_i\right)x_i'\beta)\Bigl] \left((I-\rho W_i)x_i'\right)}{\Bigl[1-\Phi \left(\left(I-\rho W_i\right)x'_i\beta\right)\Bigl]}\right]$$
+
 #### Exercice 4.5
+
+
+```{r}
+library(spldv)
+eu
+
+fit0_45 <- glm(hitec_intensity ~ pct_exp_educ_2009 + Growth_2010_2011, 
+    data = eu,
+    family = binomial(link = "probit"))
+fit0_45 |> 
+  summary()
+
+fit1_45 <- sbinaryGMM(hitec_intensity ~ pct_exp_educ_2009 + Growth_2010_2011, 
+    data = eu,
+    listw = euw,
+    link = "probit")
+fit1_45 |> 
+  summary()
+fit1_45 |> 
+  impacts()
+
+fit2_45 <- sbinaryLGMM(hitec_intensity ~ pct_exp_educ_2009 + Growth_2010_2011, 
+    data = eu,
+    listw = euw,
+    link = "probit")
+fit2_45 |> 
+  summary()
+fit2_45 |> 
+  impacts()
+
+```
+
 
 #### Exercice 4.9 (sans l'estimation)
