@@ -462,3 +462,19 @@ fit2_45 |>
 
 
 #### Exercice 4.9 (sans l'estimation)
+
+$$p(\beta, \sigma^2, \lambda | y) \propto p(\lambda) (\sigma^2) p(\beta|\sigma^2) p(y|\beta, \sigma^2, \lambda)$$
+
+Nous pouvons définir les priors $p(\beta|sigma^2)$ et $p(\sigma^2)$ comme étant NIG, soient:
+
+$$(\beta|\sigma^2) \sim N(\mu_{\beta}, \sigma^2V), \quad \text{V une matrice diagonale positive}$$
+
+$$(\sigma^2) \sim IG(a_1,b_1)$$
+
+Nous avons fait l'hypothèse que le paramètre $p(\lambda)$ est indépendant de $p(\beta, \sigma^2)$. On pourrait définir le prior comme étant $U(-1,1)$, mais le livre mentionne qu'il est préférable de choisir une densité beta de la transformation de $\lambda$.  Cela permet aussi de plus facilement adapter la forme du prior de $\lambda$ qu'en restant avec une loi uniforme.
+
+Ainsi,
+
+$$\lambda^* = \frac{\lambda + 1}{2}, \quad \lambda^* \sim \text{Beta}(a_2,b_2)$$
+
+La loi a posteriori n'est malheureusement pas conjuguée et n'est pas une expression connue. On peut ensuite réaliser l'estimation à l'aide de la loi a posteriori par l'algorithme de Metropolis-Hastings.
